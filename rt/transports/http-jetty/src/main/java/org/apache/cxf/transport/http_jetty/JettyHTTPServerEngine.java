@@ -169,6 +169,8 @@ public class JettyHTTPServerEngine implements ServerEngine, HttpServerEngineSupp
 
     private List<String> registedPaths = new CopyOnWriteArrayList<>();
 
+    private JettyHTTPServerSettings jettyHTTPServerSettings;
+
     /**
      * This constructor is called by the JettyHTTPServerEngineFactory.
      */
@@ -223,6 +225,10 @@ public class JettyHTTPServerEngine implements ServerEngine, HttpServerEngineSupp
      */
     public String getHost() {
         return host;
+    }
+
+    public void setJettyHTTPServerSettings(JettyHTTPServerSettings jettyHTTPServerSettings) {
+        this.jettyHTTPServerSettings = jettyHTTPServerSettings;
     }
 
     /**
@@ -414,6 +420,7 @@ public class JettyHTTPServerEngine implements ServerEngine, HttpServerEngineSupp
             }
             server.addConnector(connector);
             setupThreadPool();
+            setupServer(jettyHTTPServerSettings);
             /*
              * The server may have no handler, it might have a collection handler,
              * it might have a one-shot. We need to add one or more of ours.
@@ -624,6 +631,15 @@ public class JettyHTTPServerEngine implements ServerEngine, HttpServerEngineSupp
 
         registedPaths.add(url.getPath());
         ++servantCount;
+    }
+
+    private void setupServer(JettyHTTPServerSettings settings) {
+        if (this.server == null) {
+            return;
+        }
+
+        server.setRequestLog(settings.getRequestLog());
+
     }
 
 
